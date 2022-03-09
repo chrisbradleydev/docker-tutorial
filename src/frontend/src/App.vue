@@ -19,7 +19,7 @@ export default {
         };
     },
     mounted() {
-        axios.get('http://backend.demo.test/api/hello-there').then(response => (this.msg = response.data));
+        axios.get('https://backend.demo.test/api/hello-there').then(response => (this.msg = response.data));
     },
 };
 </script>

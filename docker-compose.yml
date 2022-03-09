@@ -1,10 +1,16 @@
 services:
   nginx:
-    image: nginx:1.21-alpine
+    build: ./.docker/nginx
     ports:
       - 80:80
+      - 443:443
+    networks:
+      default:
+        aliases:
+          - frontend.demo.test
     volumes:
       - ./src/backend:/var/www/backend
+      - ./.docker/nginx/certs:/etc/nginx/certs
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
       - phpmyadmin-data:/var/www/phpmyadmin
     depends_on:
@@ -20,6 +26,7 @@ services:
     volumes:
       - ./src/backend:/var/www/backend
       - ./.docker/backend/init:/opt/files/init
+      - ./.docker/nginx/certs:/usr/local/share/ca-certificates
     depends_on:
       mysql:
         condition: service_healthy
