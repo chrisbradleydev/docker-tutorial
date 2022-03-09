@@ -19,6 +19,7 @@ services:
     working_dir: /var/www/backend
     volumes:
       - ./src/backend:/var/www/backend
+      - ./.docker/backend/init:/opt/files/init
     depends_on:
       mysql:
         condition: service_healthy

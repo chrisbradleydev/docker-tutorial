@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# install composer dependencies
+composer install -d "/var/www/backend"
+
+# create .env if it doesn't exist
+if [ ! -f "/var/www/backend/.env" ]; then
+    cat > "/var/www/backend/.env" << EOF
+APP_NAME=demo
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://backend.demo.test
+
+LOG_CHANNEL=single
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=demo
+DB_USERNAME=root
+DB_PASSWORD=root
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+EOF
+
+    # generate application key
+    php "/var/www/backend/artisan" key:generate --ansi
+fi
+
+# database
+php "/var/www/backend/artisan" migrate
