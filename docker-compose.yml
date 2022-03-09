@@ -4,20 +4,31 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./src:/var/www/php
+      - ./src/backend:/var/www/backend
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
       - phpmyadmin-data:/var/www/phpmyadmin
     depends_on:
-      - php
+      - backend
+      - frontend
       - phpmyadmin
-  php:
-    build: ./.docker/php
-    working_dir: /var/www/php
+  backend:
+    build:
+      context: ./src/backend
+      args:
+        HOST_UID: $HOST_UID
+    working_dir: /var/www/backend
     volumes:
-      - ./src:/var/www/php
+      - ./src/backend:/var/www/backend
     depends_on:
       mysql:
         condition: service_healthy
+  frontend:
+    build: ./src/frontend
+    working_dir: /var/www/frontend
+    volumes:
+      - ./src/frontend:/var/www/frontend
+    depends_on:
+      - backend
   mysql:
     image: mysql/mysql-server:8.0
     environment:
