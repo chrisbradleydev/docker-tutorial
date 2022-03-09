@@ -20,6 +20,7 @@ services:
   backend:
     build:
       context: ./src/backend
+      target: backend
       args:
         HOST_UID: $HOST_UID
     working_dir: /var/www/backend
@@ -30,6 +31,19 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
+  worker:
+    build:
+      context: ./src/backend
+      target: worker
+      args:
+        HOST_UID: $HOST_UID
+    working_dir: /var/www/backend
+    volumes:
+      - ./src/backend:/var/www/backend
+    depends_on:
+      - backend
   frontend:
     build: ./src/frontend
     working_dir: /var/www/frontend
@@ -69,7 +83,13 @@ services:
       NGROK_AUTH: ${NGROK_AUTH}
     depends_on:
       - nginx
+  redis:
+    image: redis:6-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
 
 volumes:
   mysql-data:
   phpmyadmin-data:
+  redis-data:
